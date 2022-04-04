@@ -1,7 +1,7 @@
 {
-  "name": "cash-register",
+  "name": "jcash-register",
   "version": "1.0.0",
-  "description": "This app was made with the followings technologies",
+  "description": "",
   "main": "server.js",
   "scripts": {
     "start": "node backend/server",
@@ -9,17 +9,9 @@
     "client": "npm start --prefix frontend",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jotaEse1/cash-register-app.git"
-  },
   "keywords": [],
   "author": "Joaquin Sanchez",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/jotaEse1/cash-register-app/issues"
-  },
-  "homepage": "https://github.com/jotaEse1/cash-register-app#readme",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
