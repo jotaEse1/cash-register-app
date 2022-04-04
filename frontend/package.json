@@ -1,6 +1,6 @@
 {
-  "homepage":"https://jotaese1.github.io/cash-register",
-  "name": "cash-register-app",
+  "homepage":"https://jcash-register.herokuapp.com/",
+  "name": "jcash-register",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
