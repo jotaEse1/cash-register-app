@@ -23,21 +23,22 @@ const ModalPlusMinus = ({rowInformation, setModalUpdateMoney, setMsg, setModalMe
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const {editAmount} = form,
-            decimals = [...editAmount].slice([...editAmount].indexOf('.'));
-            
-        if(!Number(editAmount)){
-            setMsg(`That's not money!`)
-            setModalMessage(true)
-            return setTimeout(() => setModalMessage(false), 3500)
-        }
-        if(decimals.length > 3){
-            setMsg('Too much decimals!')
-            setModalMessage(true)
-            return setTimeout(() => setModalMessage(false), 3500)
-        }
-
+        
         try {
+            const {editAmount} = form,
+                decimals = [...editAmount].slice([...editAmount].indexOf('.'));
+                
+            if(!Number(editAmount)){
+                setMsg(`That's not money!`)
+                setModalMessage(true)
+                return setTimeout(() => setModalMessage(false), 3500)
+            }
+            if(decimals.length > 3){
+                setMsg('Too much decimals!')
+                setModalMessage(true)
+                return setTimeout(() => setModalMessage(false), 3500)
+            }
+
             if(op === 'Retire'){
                 if(editAmount > amount){
                     setMsg('Exceeds initial amount')
