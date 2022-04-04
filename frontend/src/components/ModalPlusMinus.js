@@ -36,16 +36,36 @@ const ModalPlusMinus = ({rowInformation, setModalUpdateMoney, setMsg, setModalMe
             setModalMessage(true)
             return setTimeout(() => setModalMessage(false), 3500)
         }
-        if(op === 'Retire'){
-            if(editAmount > amount){
-                setMsg('Exceeds initial amount')
-                setModalMessage(true)
-                return setTimeout(() => setModalMessage(false), 3500)
-            }
 
-            //subtract
+        try {
+            if(op === 'Retire'){
+                if(editAmount > amount){
+                    setMsg('Exceeds initial amount')
+                    setModalMessage(true)
+                    return setTimeout(() => setModalMessage(false), 3500)
+                }
+    
+                //subtract
+                const result = updateAmount(op, editAmount, currency, money),
+                    url = '/api/v1/transactions',
+                    options = {
+                        method: 'PUT',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-type': 'application/json'
+                        },
+                        body: JSON.stringify(result)
+                    }
+                
+                //update money in dataBase
+                setModalUpdateMoney(false)
+                await fetch(url, options)
+                return setForceRender(prev => prev + 1)
+            }
+    
+            //add
             const result = updateAmount(op, editAmount, currency, money),
-                url = 'https://ChashRegister.joaquinsanchez9.repl.co/api/v1/transactions',
+                url = '/api/v1/transactions',
                 options = {
                     method: 'PUT',
                     headers: {
@@ -54,32 +74,16 @@ const ModalPlusMinus = ({rowInformation, setModalUpdateMoney, setMsg, setModalMe
                     },
                     body: JSON.stringify(result)
                 }
-            
+    
             //update money in dataBase
-            await fetch(url, options)
-                .catch(err => console.log(err))
             setModalUpdateMoney(false)
+            await fetch(url, options)
             return setForceRender(prev => prev + 1)
-
+            
+        } catch (err) {
+            console.log(err)
         }
 
-        //add
-        const result = updateAmount(op, editAmount, currency, money),
-            url = 'https://ChashRegister.joaquinsanchez9.repl.co/api/v1/transactions',
-            options = {
-                method: 'PUT',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(result)
-            }
-
-        //update money in dataBase
-        await fetch(url, options)
-            .catch(err => console.log(err))
-        setModalUpdateMoney(false)
-        return setForceRender(prev => prev + 1)
     }
 
     return (

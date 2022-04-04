@@ -23,7 +23,7 @@ function App() {
 
   //fetch data to render the money list when the component did mount
   useEffect(() => {
-    const url = 'https://ChashRegister.joaquinsanchez9.repl.co/api/v1/transactions'
+    const url = '/api/v1/transactions'
 
     fetch(url)
       .then(res => res.json())
@@ -52,7 +52,7 @@ function App() {
     forceRender it's set to prev + 1 to ensure that its value will change, and as the state changed, so the table
     and the chart */
 
-    const url = 'https://ChashRegister.joaquinsanchez9.repl.co/api/v1/transactions'
+    const url = '/api/v1/transactions'
 
     fetch(url)
       .then(res => res.json())

@@ -10,7 +10,7 @@ const ModalChangeDetails = ({changeDetails, setModalChange, setForceRender, setM
     const {success, data, moneyCopy = ''} = changeDetails;
 
     const handleUpdate = async (updatedMoney) => {
-        const url = 'https://ChashRegister.joaquinsanchez9.repl.co/api/v1/transactions',
+        const url = '/api/v1/transactions',
             options = {
                 method: 'PUT',
                 headers: {
@@ -20,14 +20,18 @@ const ModalChangeDetails = ({changeDetails, setModalChange, setForceRender, setM
                 body: JSON.stringify(updatedMoney)
             }
         
-        await fetch(url, options)
-            .catch(err => console.log(err))
-
-        setMsg('Well done!')
-        setModalChange(false)
-        setModalMessage(true)
-        setTimeout(() => setModalMessage(false), 2000)
-        setForceRender(prev => prev + 1)
+        try {
+            setMsg('Well done!')
+            setModalChange(false)
+            setModalMessage(true)
+            setTimeout(() => setModalMessage(false), 2000)
+    
+            await fetch(url, options)
+                
+            setForceRender(prev => prev + 1)
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     return (
