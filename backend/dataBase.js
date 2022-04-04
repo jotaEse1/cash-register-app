@@ -23,11 +23,15 @@ const findCurrencies = async () => {
 }
 
 const updateCurrencies = (data) => {
+    let updated = 0;
+
     data.map(async (obj) => {
         const {currency, amount} = obj,
             update = await Currency.updateOne({currency},{amount})
+            updated++
     })
-     
+
+    return updated
 }
 
 
