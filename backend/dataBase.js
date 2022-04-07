@@ -1,37 +1,25 @@
 const mongoose = require('mongoose');
-const path = require('path');
-require ('dotenv').config({path: path.resolve('.env')})
-
-//connection
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('Connected to database'))
-    .catch(err => err)
 
 //schema
-const schema = mongoose.Schema({
-    currency: String,
-    unit: Number,
-    amount: Number
+const currencySchema = mongoose.Schema({
+    currencies: [{
+        currency: String,
+        unit: Number,
+        amount: Number
+    }]
 })
 //model
-const Currency = mongoose.model('Currencie', schema)
+const Currency = mongoose.model('Currencie', currencySchema)
 //actions
 
-const findCurrencies = async () => {
-    const result = await Currency.find().sort('-unit').select('-__v')
-    return result
+const findCurrencies = async (id) => {
+    const result = await Currency.find({_id: id})
+    return result[0].currencies
 }
 
-const updateCurrencies = (data) => {
-    let updated = 0;
-
-    data.map(async (obj) => {
-        const {currency, amount} = obj,
-            update = await Currency.updateOne({currency},{amount})
-            updated++
-    })
-
-    return updated
+const updateCurrencies = async (data, id) => {
+    const result = await Currency.updateOne({_id: id}, {$set: {currencies: data}})
+    return result.modifiedCount
 }
 
 

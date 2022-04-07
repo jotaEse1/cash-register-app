@@ -1,8 +1,14 @@
-const express = require('express');
+const express = require('express')
 const cors = require('cors');
 const path = require('path');
 require ('dotenv').config({path: path.resolve('.env')})
 const app = express()
+const mongoose = require('mongoose');
+
+//connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('Connected to database'))
+    .catch(err => console.log(err))
 
 //port
 const port = process.env.PORT || 8000;

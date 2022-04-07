@@ -5,6 +5,7 @@ import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./ModalPlusMinus.css";
 import { motion } from "framer-motion";
 import { modalBackgroundVariant, modalVariant } from "../animations/variants";
+import { URLS } from "../constants/constants";
 
 const initialState = {
   editAmount: "Amount",
@@ -17,6 +18,7 @@ const ModalPlusMinus = ({
   setModalMessage,
   money,
   setForceRender,
+  id
 }) => {
   const [form, setForm] = useState(initialState);
   const { currency, amount, op } = rowInformation;
@@ -30,6 +32,7 @@ const ModalPlusMinus = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setModalUpdateMoney(false);
 
     const { editAmount } = form,
       decimals = [...editAmount].slice([...editAmount].indexOf("."));
@@ -54,7 +57,7 @@ const ModalPlusMinus = ({
 
       //subtract
       const result = updateAmount(op, editAmount, currency, money),
-        url = "/api/v1/transactions",
+        url = URLS.transactions,
         options = {
           method: "PUT",
           headers: {
@@ -65,36 +68,32 @@ const ModalPlusMinus = ({
         };
 
       //update money in dataBase
-      
-      fetch(url, options)
-        .then(res => res.json())
-        .then(res => {
-            const {success, data} = res
+      fetch(`${url}?id=${id}`, options)
+        .then((res) => res.json())
+        .then((res) => {
+          const { success } = res;
 
-            if(!success){
-                setMsg("An error ocurred. Try again.");
-                setModalMessage(true);
-                return setTimeout(() => setModalMessage(false), 3500);                
-            }
-            if(!data === 12){
-                setMsg("An error ocurred. Try again.");
-                setModalMessage(true);
-                return setTimeout(() => setModalMessage(false), 3500);  
-            }
-
-            setModalUpdateMoney(false);
-            return setForceRender((prev) => prev + 1);
-        })
-        .catch(() => {
+          if (!success) {
             setMsg("An error ocurred. Try again.");
             setModalMessage(true);
-            return setTimeout(() => setModalMessage(false), 3500);            
+            return setTimeout(() => setModalMessage(false), 3500);
+          }
+
+          setMsg("Well done!");
+          setModalMessage(true);
+          setTimeout(() => setModalMessage(false), 3500);
+          return setForceRender((prev) => prev + 1);
         })
+        .catch(() => {
+          setMsg("An error ocurred. Try again.");
+          setModalMessage(true);
+          return setTimeout(() => setModalMessage(false), 3500);
+        });
     }
 
     //add
     const result = updateAmount(op, editAmount, currency, money),
-      url = "/api/v1/transactions",
+      url = URLS.transactions,
       options = {
         method: "PUT",
         headers: {
@@ -105,30 +104,27 @@ const ModalPlusMinus = ({
       };
 
     //update money in dataBase
-    fetch(url, options)
-        .then(res => res.json())
-        .then(res => {
-            const {success, data} = res
+    fetch(`${url}?id=${id}`, options)
+      .then((res) => res.json())
+      .then((res) => {
+        const { success } = res;
 
-            if(!success){
-                setMsg("An error ocurred. Try again.");
-                setModalMessage(true);
-                return setTimeout(() => setModalMessage(false), 3500);                
-            }
-            if(!data === 12){
-                setMsg("An error ocurred. Try again.");
-                setModalMessage(true);
-                return setTimeout(() => setModalMessage(false), 3500);  
-            }
+        if (!success) {
+          setMsg("An error ocurred. Try again.");
+          setModalMessage(true);
+          return setTimeout(() => setModalMessage(false), 3500);
+        }
 
-            setModalUpdateMoney(false);
-            return setForceRender((prev) => prev + 1);
-        })
-        .catch(() => {
-            setMsg("An error ocurred. Try again.");
-            setModalMessage(true);
-            return setTimeout(() => setModalMessage(false), 3500);            
-        })
+        setMsg("Well done!");
+        setModalMessage(true);
+        setTimeout(() => setModalMessage(false), 3500);
+        return setForceRender((prev) => prev + 1);
+      })
+      .catch(() => {
+        setMsg("An error ocurred. Try again.");
+        setModalMessage(true);
+        return setTimeout(() => setModalMessage(false), 3500);
+      });
   };
 
   return (

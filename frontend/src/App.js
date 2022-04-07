@@ -8,8 +8,10 @@ import ModalPlusMinus from './components/ModalPlusMinus';
 import ThemeButton from './components/ThemeButton';
 import {AnimatePresence} from 'framer-motion'
 import './App.css';
+import {URLS} from './constants/constants'
 
 function App() {
+  const [id, setId] = useState('624eea21618d8a1c606bf937');
   const [transaction, setTransaction] = useState('');
   const [money, setMoney] = useState([]);
   const [changeDetails, setChangeDetails] = useState([]);
@@ -23,9 +25,11 @@ function App() {
 
   //fetch data to render the money list when the component did mount
   useEffect(() => {
-    const url = '/api/v1/transactions'
-
-    fetch(url)
+    if(!id) return;
+    
+    const url = URLS.transactions
+    
+    fetch(`${url}?id=${id}`)
       .then(res => res.json())
       .then(res => {
         const {success} = res;
@@ -43,7 +47,7 @@ function App() {
         setModalMessage(true)
         setTimeout(() => {setModalMessage(false)}, 3500)
       })
-  }, [])
+  }, [id])
 
   //to update the chart and the table when add/subtract money or a transaction ocurred
   useEffect(() => {
@@ -52,9 +56,9 @@ function App() {
     forceRender it's set to prev + 1 to ensure that its value will change, and as the state changed, so the table
     and the chart */
 
-    const url = '/api/v1/transactions'
+    const url = URLS.transactions
 
-    fetch(url)
+    fetch(`${url}?id=${id}`)
       .then(res => res.json())
       .then(res => {
         const {success} = res;
@@ -110,6 +114,7 @@ function App() {
             setForceRender={setForceRender}
             setMsg={setMsg}
             setModalMessage={setModalMessage}
+            id={id}
           />
         }
       </AnimatePresence>
@@ -129,6 +134,7 @@ function App() {
               setModalMessage={setModalMessage}
               money={money}
               setForceRender={setForceRender}
+              id={id}
             />
         }
       </AnimatePresence>

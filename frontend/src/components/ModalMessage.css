@@ -10,7 +10,7 @@
 .message {
     width: max-content;
     height: max-content;
-    position: absolute;
+    position: fixed;
     z-index: 40;
     top: 9vh;
     left: 1vw;
