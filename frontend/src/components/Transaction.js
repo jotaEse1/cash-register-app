@@ -1,96 +1,110 @@
-import React, { useState } from 'react';
-import {operation} from '../utils/Operation'
-import {motion} from 'framer-motion'
-import {appearVariant, buttonVariant} from '../animations/variants'
+import React, { useState } from "react";
+import { operation } from "../utils/Operation";
+import { motion } from "framer-motion";
+import { appearVariant, buttonVariant } from "../animations/variants";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  openModalMsg,
+  closeModalMsg,
+} from "../features/ModalMessage/modalMessageReducer";
+import { handleChangeDetails, openModalChangeDetails } from "../features/ModalChangeDetails/modalChangeDetailsReducer";
 
 const initialState = {
-    price: '',
-    paid: ''
-}
+  price: "",
+  paid: "",
+};
 
-const Transaction = ({setTransaction, setChangeDetails, money, setModalMessage, setMsg, setModalChange}) => {
-    const [form, setForm] = useState(initialState);
+const Transaction = () => {
+  const [form, setForm] = useState(initialState);
+  const {money} = useSelector(state => state.app)
+  const dispatch = useDispatch();
 
-    const handleForm = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value
-        })
+  const handleForm = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const { paid, price } = form,
+      decimalsPaid = [...paid].slice([...paid].indexOf(".")),
+      decimalsPrice = [...price].slice([...price].indexOf("."));
+
+    if (!Number(paid) || !Number(price)) {
+      dispatch(openModalMsg("That's not money!"));
+      return setTimeout(() => dispatch(closeModalMsg()), 3500);
+    }
+    if (Number(paid) < Number(price)) {
+      dispatch(openModalMsg("No need for change!"));
+      return setTimeout(() => dispatch(closeModalMsg()), 3500);
+    }
+    if (decimalsPaid.length > 3 || decimalsPrice.length > 3) {
+      dispatch(openModalMsg("Too much decimals!"));
+      return setTimeout(() => dispatch(closeModalMsg()), 3500);
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
+    const result = operation(form, money);
 
-        const {paid, price} = form,
-            decimalsPaid = [...paid].slice([...paid].indexOf('.')),
-            decimalsPrice = [...price].slice([...price].indexOf('.'));
-                
-        if(!Number(paid) || !Number(price)){
-            setMsg(`That's not money!`)
-            setModalMessage(true)
-            return setTimeout(() => setModalMessage(false), 3500)
-        }
-        if(Number(paid) < Number(price)){
-            setMsg(`No need for change!`)
-            setModalMessage(true)
-            return setTimeout(() => setModalMessage(false), 3500)
-        }
-        if(decimalsPaid.length > 3 || decimalsPrice.length > 3){
-            setMsg(`Too much decimals!`)
-            setModalMessage(true)
-            return setTimeout(() => setModalMessage(false), 3500)
-        } 
+    if (result.success) {
+      dispatch(openModalChangeDetails())
+      dispatch(handleChangeDetails({
+        success: true,
+        data: result.changeDetails,
+        moneyCopy: result.moneyCopy
+      }))
 
-        const result = operation(form, money);
-        setTransaction(form)
-
-        if(result.success){
-            setModalChange(true)
-            setChangeDetails({success: true, data: result.changeDetails, moneyCopy: result.moneyCopy})
-        } 
-        if(!result.success){
-            setModalChange(true)
-            setChangeDetails({success: false, data: result.msg})
-        } 
-        
-        setForm(initialState)
+    }
+    if (!result.success) {
+      dispatch(openModalChangeDetails())
+      dispatch(handleChangeDetails({
+        success: false,
+        msg: result.msg
+      }))
     }
 
-    return (
-        <motion.div 
-            className='transaction'
-            variants={appearVariant}
-            initial='hide'
-            animate='visible'
+    setForm(initialState);
+  };
+
+  return (
+    <motion.div
+      className="transaction"
+      variants={appearVariant}
+      initial="hide"
+      animate="visible"
+    >
+      <form onSubmit={handleSubmit}>
+        <input
+          type="number"
+          name="price"
+          step=".01"
+          min="0"
+          value={form.price}
+          placeholder="Price"
+          onChange={handleForm}
+        />
+        <input
+          type="number"
+          name="paid"
+          step=".01"
+          min="0"
+          value={form.paid}
+          placeholder="Amount paid"
+          onChange={handleForm}
+        />
+        <motion.button
+          type="submit"
+          variants={buttonVariant}
+          whileTap="click"
+          whileHover="hover"
         >
-            <form onSubmit={handleSubmit}>
-                <input
-                    type='number'
-                    name='price'
-                    step='.01'
-                    min='0'
-                    value={form.price}
-                    placeholder='Price'
-                    onChange={handleForm}
-                />
-                <input
-                    type='number' 
-                    name='paid'
-                    step='.01'
-                    min='0'
-                    value={form.paid}
-                    placeholder='Amount paid'
-                    onChange={handleForm}
-                />
-                <motion.button
-                    type='submit'
-                    variants={buttonVariant}
-                    whileTap='click'
-                    whileHover='hover'
-                >Change!</motion.button>
-            </form>
-        </motion.div>
-    );
+          Change!
+        </motion.button>
+      </form>
+    </motion.div>
+  );
 };
 
 export default Transaction;

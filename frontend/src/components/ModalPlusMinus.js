@@ -6,22 +6,24 @@ import "./ModalPlusMinus.css";
 import { motion } from "framer-motion";
 import { modalBackgroundVariant, modalVariant } from "../animations/variants";
 import { URLS } from "../constants/constants";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  closeModalMsg,
+  openModalMsg,
+} from "../features/ModalMessage/modalMessageReducer";
+import { closeModalUpdate } from "../features/ModalPlusMinus/modalPlusMinusReducer";
+import { setForceRender } from "../features/App/appReducer";
 
 const initialState = {
   editAmount: "Amount",
 };
 
-const ModalPlusMinus = ({
-  rowInformation,
-  setModalUpdateMoney,
-  setMsg,
-  setModalMessage,
-  money,
-  setForceRender,
-  id
-}) => {
+const ModalPlusMinus = () => {
+  const {id} = useSelector(state => state.app)
   const [form, setForm] = useState(initialState);
-  const { currency, amount, op } = rowInformation;
+  const { currency, amount, op } = useSelector(state => state.rowInformation);
+  const {money} = useSelector(state => state.app)
+  const dispatch = useDispatch();
 
   const handleForm = (e) => {
     setForm({
@@ -32,27 +34,24 @@ const ModalPlusMinus = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setModalUpdateMoney(false);
+    dispatch(closeModalUpdate())
 
     const { editAmount } = form,
       decimals = [...editAmount].slice([...editAmount].indexOf("."));
 
     if (!Number(editAmount)) {
-      setMsg(`That's not money!`);
-      setModalMessage(true);
-      return setTimeout(() => setModalMessage(false), 3500);
+      dispatch(openModalMsg("That's not money!"));
+      return setTimeout(() => dispatch(closeModalMsg()), 3500);
     }
     if (decimals.length > 3) {
-      setMsg("Too much decimals!");
-      setModalMessage(true);
-      return setTimeout(() => setModalMessage(false), 3500);
+      dispatch(openModalMsg("Too much decimals!"));
+      return setTimeout(() => dispatch(closeModalMsg()), 3500);
     }
 
     if (op === "Retire") {
       if (editAmount > amount) {
-        setMsg("Exceeds initial amount");
-        setModalMessage(true);
-        return setTimeout(() => setModalMessage(false), 3500);
+        dispatch(openModalMsg("Exceeds initial amount"));
+        return setTimeout(() => dispatch(closeModalMsg()), 3500);
       }
 
       //subtract
@@ -74,20 +73,17 @@ const ModalPlusMinus = ({
           const { success } = res;
 
           if (!success) {
-            setMsg("An error ocurred. Try again.");
-            setModalMessage(true);
-            return setTimeout(() => setModalMessage(false), 3500);
+            dispatch(openModalMsg("An error ocurred. Try again."));
+            return setTimeout(() => dispatch(closeModalMsg()), 3500);
           }
 
-          setMsg("Well done!");
-          setModalMessage(true);
-          setTimeout(() => setModalMessage(false), 3500);
-          return setForceRender((prev) => prev + 1);
+          dispatch(openModalMsg("Well done!"));
+          setTimeout(() => dispatch(closeModalMsg()), 3500);
+          return dispatch(setForceRender());
         })
         .catch(() => {
-          setMsg("An error ocurred. Try again.");
-          setModalMessage(true);
-          return setTimeout(() => setModalMessage(false), 3500);
+          dispatch(openModalMsg("An error ocurred. Try again."));
+          return setTimeout(() => dispatch(closeModalMsg()), 3500);
         });
     }
 
@@ -110,20 +106,17 @@ const ModalPlusMinus = ({
         const { success } = res;
 
         if (!success) {
-          setMsg("An error ocurred. Try again.");
-          setModalMessage(true);
-          return setTimeout(() => setModalMessage(false), 3500);
+          dispatch(openModalMsg("An error ocurred. Try again."));
+          return setTimeout(() => dispatch(closeModalMsg()), 3500);
         }
 
-        setMsg("Well done!");
-        setModalMessage(true);
-        setTimeout(() => setModalMessage(false), 3500);
-        return setForceRender((prev) => prev + 1);
+        dispatch(openModalMsg("Well done!"));
+        setTimeout(() => dispatch(closeModalMsg()), 3500);
+        return dispatch(setForceRender());
       })
       .catch(() => {
-        setMsg("An error ocurred. Try again.");
-        setModalMessage(true);
-        return setTimeout(() => setModalMessage(false), 3500);
+        dispatch(openModalMsg("An error ocurred. Try again."));
+        return setTimeout(() => dispatch(closeModalMsg()), 3500);
       });
   };
 
@@ -150,7 +143,7 @@ const ModalPlusMinus = ({
           <div>
             <button
               type="button"
-              onClick={() => setModalUpdateMoney((prev) => !prev)}
+              onClick={() => dispatch(closeModalUpdate())}
             >
               <FontAwesomeIcon icon={faXmark} />
             </button>

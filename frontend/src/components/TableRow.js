@@ -3,9 +3,14 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faSquarePlus, faSquareMinus} from '@fortawesome/free-solid-svg-icons'
 import {motion} from 'framer-motion'
 import {appearVariant, buttonVariant} from '../animations/variants'
+import { useDispatch } from "react-redux";
+import { setRowInfo } from "../features/TableRow/tableRowReducer";
+import { openModalUpdate } from '../features/ModalPlusMinus/modalPlusMinusReducer';
 
-const TableRow = ({money, setModalUpdateMoney, setRowInformation}) => {
-    const {currency, amount} = money;
+const TableRow = ({row}) => {
+    const dispatch = useDispatch()
+
+    const {currency, amount} = row;
 
     return (
         <>
@@ -16,7 +21,10 @@ const TableRow = ({money, setModalUpdateMoney, setRowInformation}) => {
                 <td>$ {Number((amount).toFixed(2))}</td>
                 <td>
                     <motion.button
-                        onClick={() => {setModalUpdateMoney(prev => !prev); setRowInformation({currency, amount, op: 'Add'})}}
+                        onClick={() => {
+                            dispatch(openModalUpdate())
+                            dispatch(setRowInfo({currency, amount, op: 'Add'}))
+                        }}
                         variants={buttonVariant}
                         whileHover='hover'
                         whileTap='click'
@@ -24,7 +32,10 @@ const TableRow = ({money, setModalUpdateMoney, setRowInformation}) => {
                         <FontAwesomeIcon icon={faSquarePlus} />
                     </motion.button>
                     <motion.button
-                        onClick={() => {setModalUpdateMoney(prev => !prev); setRowInformation({currency, amount, op: 'Retire'})}}
+                        onClick={() => {
+                            dispatch(openModalUpdate())
+                            dispatch(setRowInfo({currency, amount, op: 'Retire'}))
+                        }}
                         variants={buttonVariant}
                         whileHover='hover'
                         whileTap='click'

@@ -2,8 +2,11 @@ import React from 'react';
 import TableRow from './TableRow';
 import {motion} from 'framer-motion'
 import {appearVariant} from '../animations/variants'
+import {useSelector} from 'react-redux'
 
-const Table = ({money, setModalUpdateMoney, setRowInformation}) => {
+const Table = () => {
+    const {money} = useSelector(state => state.app)
+    
     return (
         <div className='table_container'>
             <motion.table
@@ -19,13 +22,17 @@ const Table = ({money, setModalUpdateMoney, setRowInformation}) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {money.map(money => 
-                        <TableRow 
-                            key={money['_id']} 
-                            money={money} 
-                            setModalUpdateMoney={setModalUpdateMoney}
-                            setRowInformation={setRowInformation}
-                        />
+                    {money.length? (
+                        money.map(obj => 
+                            <TableRow 
+                                key={obj['_id']} 
+                                row={obj} 
+                            />
+                        )
+                    ):(
+                        <tr>
+                            <td colSpan={3}>Loading....</td>
+                        </tr>
                     )}
                 </tbody>
                 <tfoot>

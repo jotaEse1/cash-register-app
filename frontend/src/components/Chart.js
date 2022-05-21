@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import {motion} from 'framer-motion'
 import {appearVariant} from '../animations/variants'
 import { d3Chart } from '../utils/chartGenerator';
+import {useSelector} from 'react-redux'
 
-const Chart = ({money}) => {
+const Chart = () => {
     const svgRef = useRef()
+    const {money} = useSelector(state => state.app)
 
     useEffect(() => {
         if(!money.length) return;

@@ -9,16 +9,15 @@ import {
   modalChangeVariant,
 } from "../animations/variants";
 import { URLS } from "../constants/constants";
+import { closeModalMsg, openModalMsg } from "../features/ModalMessage/modalMessageReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { closeModalChangeDetails } from "../features/ModalChangeDetails/modalChangeDetailsReducer";
+import { setForceRender } from "../features/App/appReducer";
 
-const ModalChangeDetails = ({
-  changeDetails,
-  setModalChange,
-  setForceRender,
-  setMsg,
-  setModalMessage,
-  id
-}) => {
-  const { success, data, moneyCopy = "" } = changeDetails;
+const ModalChangeDetails = () => {
+  const {id} = useSelector(state => state.app)
+  const {success, data, moneyCopy, msg} = useSelector(state => state.changeDetails)
+  const dispatch = useDispatch()
 
   const handleUpdate = (updatedMoney) => {
     const url = URLS.transactions,
@@ -31,14 +30,13 @@ const ModalChangeDetails = ({
         body: JSON.stringify(updatedMoney),
       };
       
-    setModalChange(false);
+    dispatch(closeModalChangeDetails());
     fetch(`${url}?id=${id}`, options)
       .then((res) => res.json())
       .then((res) => {
-        setMsg("Well done!");
-        setModalMessage(true);
-        setTimeout(() => setModalMessage(false), 2000);
-        setForceRender((prev) => prev + 1);
+        dispatch(openModalMsg("Well done!"))
+        setTimeout(() => dispatch(closeModalMsg()), 2000);
+        dispatch(setForceRender());
       })
       .catch(() => {});
 
@@ -82,7 +80,7 @@ const ModalChangeDetails = ({
               </tfoot>
             </table>
             <div>
-              <button type="button" onClick={() => setModalChange(false)}>
+              <button type="button" onClick={() => dispatch(closeModalChangeDetails())}>
                 <FontAwesomeIcon icon={faXmark} />
               </button>
               <button type="button" onClick={() => handleUpdate(moneyCopy)}>
@@ -92,8 +90,8 @@ const ModalChangeDetails = ({
           </>
         ) : (
           <>
-            <p>{data}</p>
-            <button type="button" onClick={() => setModalChange(false)}>
+            <p>{msg}</p>
+            <button type="button" onClick={() => dispatch(closeModalChangeDetails())}>
               <FontAwesomeIcon icon={faXmark} />
             </button>
           </>
